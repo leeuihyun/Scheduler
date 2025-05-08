@@ -11,5 +11,5 @@ public interface ScheduleService {
 
   List<ScheduleResponseDto> findAllSchedules(String user_name, Optional<LocalDate> optionalDate);
 
-  ScheduleResponseDto findScheduleById(Integer schedule_id);
+  ScheduleResponseDto findScheduleById(Long schedule_id);
 }

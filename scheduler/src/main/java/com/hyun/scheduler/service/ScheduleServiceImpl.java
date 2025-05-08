@@ -28,7 +28,7 @@ public class ScheduleServiceImpl implements ScheduleService{
   }
 
   @Override
-  public ScheduleResponseDto findScheduleById(Integer schedule_id) {
+  public ScheduleResponseDto findScheduleById(Long schedule_id) {
     Optional<ScheduleResponseDto> scheduleResponse =  scheduleRepository.findScheduleById(schedule_id);
 
     if(scheduleResponse.isEmpty()) {

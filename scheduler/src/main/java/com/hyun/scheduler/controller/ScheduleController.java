@@ -40,7 +40,7 @@ public class ScheduleController {
   }
 
   @GetMapping("/schedule/{scheduleId}")
-  public ResponseEntity<ScheduleResponseDto> findScheduleById(@PathVariable Integer scheduleId) {
+  public ResponseEntity<ScheduleResponseDto> findScheduleById(@PathVariable Long scheduleId) {
     ScheduleResponseDto scheduleResponse = scheduleService.findScheduleById(scheduleId);
     return ResponseEntity.status(HttpStatus.OK).body(scheduleResponse);
   }

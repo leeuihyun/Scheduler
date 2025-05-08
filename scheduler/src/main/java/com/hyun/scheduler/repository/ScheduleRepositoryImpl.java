@@ -39,7 +39,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   }
 
   @Override
-  public Optional<ScheduleResponseDto> findScheduleById(Integer schedule_id) {
+  public Optional<ScheduleResponseDto> findScheduleById(Long schedule_id) {
     List<ScheduleResponseDto> result =  jdbcTemplate.query("select * from schedule where schedule_id = ?", scheduleRowMapper(), schedule_id);
     return result.stream().findAny();
   }
@@ -50,6 +50,12 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
       return jdbcTemplate.query("select * from schedule where user_name = ?", scheduleRowMapper(), user_name);
     }
     return jdbcTemplate.query("select * from schedule where user_name = ? and DATE(updated_at) = ?", scheduleRowMapper(), user_name, optionalDate.get().toString());
+  }
+
+  @Override
+  public Long updateSchedule(Long id, String schedule_title, String schedule_content,
+      String user_name, String password) {
+    return 0L;
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {

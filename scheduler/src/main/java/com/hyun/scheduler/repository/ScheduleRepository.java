@@ -9,7 +9,9 @@ import java.util.Optional;
 public interface ScheduleRepository {
   Long saveSchedule(ScheduleRequestDto scheduleRequestDto);
 
-  Optional<ScheduleResponseDto> findScheduleById(Integer schedule_id);
+  Optional<ScheduleResponseDto> findScheduleById(Long schedule_id);
 
   List<ScheduleResponseDto> findAllSchedules(String user_name, Optional<LocalDate> optionalDate);
+
+  Long updateSchedule(Long id, String schedule_title, String schedule_content, String user_name, String password);
 }
