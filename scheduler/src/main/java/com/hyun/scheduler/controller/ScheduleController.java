@@ -27,8 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ScheduleController {
 
-  @Autowired
-  private ScheduleService scheduleService;
+  private final ScheduleService scheduleService;
+
+  public ScheduleController(ScheduleService scheduleService) {
+    this.scheduleService = scheduleService;
+  }
 
   @PostMapping("/schedule")
   public ResponseEntity<Long> createSchedule(@RequestBody ScheduleRequestDto scheduleRequestDto) {

@@ -21,8 +21,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ScheduleRepositoryImpl implements ScheduleRepository{
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
+
+  public ScheduleRepositoryImpl(JdbcTemplate jdbcTemplate) {
+    this.jdbcTemplate = jdbcTemplate;
+  }
 
   @Override
   public Long saveSchedule(ScheduleRequestDto scheduleRequestDto) {
