@@ -1,5 +1,6 @@
 package com.hyun.scheduler.repository;
 
+import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
@@ -59,6 +60,12 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
         "update schedule set schedule_title=?, schedule_content = ?, user_name = ? where schedule_id = ? and password = ?",
         scheduleUpdateRequestDto.getSchedule_title(), scheduleUpdateRequestDto.getSchedule_content(),
         scheduleUpdateRequestDto.getUser_name(), scheduleUpdateRequestDto.getSchedule_id(), scheduleUpdateRequestDto.getPassword());
+  }
+
+  @Override
+  public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
+    return jdbcTemplate.update("delete from schedule where schedule_id = ? and password = ?",
+        scheduleDeleteDto.getSchedule_id(), scheduleDeleteDto.getPassword());
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {

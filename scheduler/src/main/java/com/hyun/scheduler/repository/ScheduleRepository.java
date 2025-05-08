@@ -1,5 +1,6 @@
 package com.hyun.scheduler.repository;
 
+import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
@@ -15,4 +16,6 @@ public interface ScheduleRepository {
   List<ScheduleResponseDto> findAllSchedules(String user_name, Optional<LocalDate> optionalDate);
 
   Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
+
+  Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
 }

@@ -1,5 +1,6 @@
 package com.hyun.scheduler.service;
 
+import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
@@ -56,5 +57,14 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     return scheduleResponseDto.get();
+  }
+
+  @Override
+  public void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
+    int deleteRow = scheduleRepository.deleteSchedule(scheduleDeleteDto);
+
+    if(deleteRow == 0) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄 삭제에 실패했습니다.");
+    }
   }
 }

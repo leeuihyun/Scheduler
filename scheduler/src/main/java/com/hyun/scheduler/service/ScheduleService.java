@@ -1,5 +1,6 @@
 package com.hyun.scheduler.service;
 
+import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
@@ -15,4 +16,6 @@ public interface ScheduleService {
   ScheduleResponseDto findScheduleById(Long schedule_id);
 
   ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
+
+  void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
 }
