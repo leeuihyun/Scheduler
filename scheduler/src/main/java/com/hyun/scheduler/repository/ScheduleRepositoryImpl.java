@@ -1,7 +1,9 @@
 package com.hyun.scheduler.repository;
 
+import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
+import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -39,7 +41,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   }
 
   @Override
-  public Optional<ScheduleResponseDto> findScheduleById(Integer schedule_id) {
+  public Optional<ScheduleResponseDto> findScheduleById(Long schedule_id) {
     List<ScheduleResponseDto> result =  jdbcTemplate.query("select * from schedule where schedule_id = ?", scheduleRowMapper(), schedule_id);
     return result.stream().findAny();
   }
@@ -50,6 +52,20 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
       return jdbcTemplate.query("select * from schedule where user_name = ?", scheduleRowMapper(), user_name);
     }
     return jdbcTemplate.query("select * from schedule where user_name = ? and DATE(updated_at) = ?", scheduleRowMapper(), user_name, optionalDate.get().toString());
+  }
+
+  @Override
+  public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    return jdbcTemplate.update(
+        "update schedule set schedule_title=?, schedule_content = ?, user_name = ? where schedule_id = ? and password = ?",
+        scheduleUpdateRequestDto.getSchedule_title(), scheduleUpdateRequestDto.getSchedule_content(),
+        scheduleUpdateRequestDto.getUser_name(), scheduleUpdateRequestDto.getSchedule_id(), scheduleUpdateRequestDto.getPassword());
+  }
+
+  @Override
+  public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
+    return jdbcTemplate.update("delete from schedule where schedule_id = ? and password = ?",
+        scheduleDeleteDto.getSchedule_id(), scheduleDeleteDto.getPassword());
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
@@ -63,7 +79,6 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
             rs.getString("user_name"),
             rs.getTimestamp("created_at").toLocalDateTime(),
             rs.getTimestamp("updated_at").toLocalDateTime()
-
         );
       }
     };
