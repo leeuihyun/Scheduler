@@ -2,6 +2,7 @@ package com.hyun.scheduler.repository;
 
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
+import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -53,9 +54,11 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   }
 
   @Override
-  public Long updateSchedule(Long id, String schedule_title, String schedule_content,
-      String user_name, String password) {
-    return 0L;
+  public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    return jdbcTemplate.update(
+        "update schedule set schedule_title=?, schedule_content = ?, user_name = ? where schedule_id = ? and password = ?",
+        scheduleUpdateRequestDto.getSchedule_title(), scheduleUpdateRequestDto.getSchedule_content(),
+        scheduleUpdateRequestDto.getUser_name(), scheduleUpdateRequestDto.getSchedule_id(), scheduleUpdateRequestDto.getPassword());
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
@@ -69,7 +72,6 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
             rs.getString("user_name"),
             rs.getTimestamp("created_at").toLocalDateTime(),
             rs.getTimestamp("updated_at").toLocalDateTime()
-
         );
       }
     };

@@ -2,6 +2,7 @@ package com.hyun.scheduler.repository;
 
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
+import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -13,5 +14,5 @@ public interface ScheduleRepository {
 
   List<ScheduleResponseDto> findAllSchedules(String user_name, Optional<LocalDate> optionalDate);
 
-  Long updateSchedule(Long id, String schedule_title, String schedule_content, String user_name, String password);
+  Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
 }

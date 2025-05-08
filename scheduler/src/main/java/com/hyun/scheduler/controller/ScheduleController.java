@@ -2,6 +2,7 @@ package com.hyun.scheduler.controller;
 
 import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
+import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import com.hyun.scheduler.service.ScheduleService;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,5 +47,9 @@ public class ScheduleController {
     return ResponseEntity.status(HttpStatus.OK).body(scheduleResponse);
   }
 
-
+  @PutMapping("/schedule/update")
+  public ResponseEntity<ScheduleResponseDto> updateSchedule(@RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+    ScheduleResponseDto scheduleResponseDto = scheduleService.updateSchedule(scheduleUpdateRequestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(scheduleResponseDto);
+  }
 }
