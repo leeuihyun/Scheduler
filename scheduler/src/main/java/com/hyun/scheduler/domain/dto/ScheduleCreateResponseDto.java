@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleDeleteDto {
+public class ScheduleCreateResponseDto {
+  private Long userId;
   private Long scheduleId;
-  private String userPassword;
 }

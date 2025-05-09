@@ -1,9 +1,10 @@
 package com.hyun.scheduler.repository;
 
 import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
-import com.hyun.scheduler.domain.dto.ScheduleRequestDto;
+import com.hyun.scheduler.domain.dto.ScheduleCreateRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
+import com.hyun.scheduler.domain.dto.UserDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,15 +28,18 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   }
 
   @Override
-  public Long saveSchedule(ScheduleRequestDto scheduleRequestDto) {
+  public Long saveSchedule(String scheduleTitle, String scheduleContent, Long userId) {
     SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-    simpleJdbcInsert.withTableName("schedule").usingGeneratedKeyColumns("schedule_id").usingColumns("schedule_title", "schedule_content", "user_name", "password");
+
+    simpleJdbcInsert
+        .withTableName("schedule")
+        .usingGeneratedKeyColumns("schedule_id")
+        .usingColumns("schedule_title", "schedule_content", "user_id");
 
     Map<String, Object> map = new HashMap<>();
-    map.put("schedule_title", scheduleRequestDto.getSchedule_title());
-    map.put("schedule_content", scheduleRequestDto.getSchedule_content());
-    map.put("user_name", scheduleRequestDto.getUser_name());
-    map.put("password", scheduleRequestDto.getPassword());
+    map.put("schedule_title", scheduleTitle);
+    map.put("schedule_content", scheduleContent);
+    map.put("user_id", userId);
 
     Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(map));
 
@@ -44,31 +47,33 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   }
 
   @Override
-  public Optional<ScheduleResponseDto> findScheduleById(Long schedule_id) {
-    List<ScheduleResponseDto> result =  jdbcTemplate.query("select * from schedule where schedule_id = ?", scheduleRowMapper(), schedule_id);
+  public Optional<ScheduleResponseDto> findScheduleById(Long scheduleId) {
+    List<ScheduleResponseDto> result = jdbcTemplate.query(
+        "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where schedule_id = ?",
+        scheduleRowMapper(), scheduleId);
     return result.stream().findAny();
   }
 
   @Override
-  public List<ScheduleResponseDto> findAllSchedules(String user_name, Optional<LocalDate> optionalDate) {
+  public List<ScheduleResponseDto> findAllSchedules(Long userId, Optional<LocalDate> optionalDate) {
     if(optionalDate.isEmpty()) {
-      return jdbcTemplate.query("select * from schedule where user_name = ?", scheduleRowMapper(), user_name);
+      return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ?", scheduleRowMapper(), userId);
     }
-    return jdbcTemplate.query("select * from schedule where user_name = ? and DATE(updated_at) = ?", scheduleRowMapper(), user_name, optionalDate.get().toString());
+    return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? and DATE(s.updated_at) = ?", scheduleRowMapper(), userId, optionalDate.get().toString());
   }
 
   @Override
   public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
     return jdbcTemplate.update(
-        "update schedule set schedule_title=?, schedule_content = ?, user_name = ? where schedule_id = ? and password = ?",
-        scheduleUpdateRequestDto.getSchedule_title(), scheduleUpdateRequestDto.getSchedule_content(),
-        scheduleUpdateRequestDto.getUser_name(), scheduleUpdateRequestDto.getSchedule_id(), scheduleUpdateRequestDto.getPassword());
+        "update schedule set schedule_title=?, schedule_content = ? where schedule_id = ?",
+        scheduleUpdateRequestDto.getScheduleTitle(), scheduleUpdateRequestDto.getScheduleContent(),
+        scheduleUpdateRequestDto.getScheduleId());
   }
 
   @Override
   public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
-    return jdbcTemplate.update("delete from schedule where schedule_id = ? and password = ?",
-        scheduleDeleteDto.getSchedule_id(), scheduleDeleteDto.getPassword());
+    return jdbcTemplate.update("delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and u.user_password = ?",
+        scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserPassword());
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
