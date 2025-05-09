@@ -17,4 +17,6 @@ public interface ScheduleRepository {
   Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
 
   Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+
+  List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
 }

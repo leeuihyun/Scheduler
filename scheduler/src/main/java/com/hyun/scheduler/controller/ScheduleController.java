@@ -9,6 +9,7 @@ import com.hyun.scheduler.service.ScheduleService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,5 +61,14 @@ public class ScheduleController {
   public ResponseEntity<Void> deleteSchedule(@RequestBody ScheduleDeleteDto scheduleDeleteDto) {
     scheduleService.deleteSchedule(scheduleDeleteDto);
     return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @GetMapping("/page/schedules")
+  public ResponseEntity<List<ScheduleResponseDto>> findPageSchedules(
+      @RequestParam(defaultValue = "0") Integer page,
+      @RequestParam(defaultValue = "10") Integer size)
+  {
+    List<ScheduleResponseDto> pageScheduleList = scheduleService.findPageSchedules(page,size);
+    return ResponseEntity.status(HttpStatus.OK).body(pageScheduleList);
   }
 }

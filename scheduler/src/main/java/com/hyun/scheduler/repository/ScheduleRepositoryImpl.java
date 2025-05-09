@@ -57,9 +57,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   @Override
   public List<ScheduleResponseDto> findAllSchedules(Long userId, Optional<LocalDate> optionalDate) {
     if(optionalDate.isEmpty()) {
-      return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ?", scheduleRowMapper(), userId);
+      return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? ORDER BY s.updated_at DESC", scheduleRowMapper(), userId);
     }
-    return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? and DATE(s.updated_at) = ?", scheduleRowMapper(), userId, optionalDate.get().toString());
+    return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? and DATE(s.updated_at) = ? ORDER BY s.updated_at DESC", scheduleRowMapper(), userId, optionalDate.get().toString());
   }
 
   @Override
@@ -74,6 +74,17 @@ public class ScheduleRepositoryImpl implements ScheduleRepository{
   public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
     return jdbcTemplate.update("delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and u.user_password = ?",
         scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserPassword());
+  }
+
+  @Override
+  public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
+    return jdbcTemplate.query(
+        "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at "
+            + "from schedule s "
+            + "join user u on s.user_id = u.user_id "
+            + "ORDER BY s.updated_at DESC "
+            + "LIMIT ? OFFSET ?",
+        scheduleRowMapper(), size, page*size);
   }
 
   private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
