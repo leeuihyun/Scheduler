@@ -8,6 +8,7 @@ import lombok.Setter;
 public class ScheduleRequestDto {
   private String schedule_title;
   private String schedule_content;
+  private String user_email;
   private String user_name;
   private String password;
 }

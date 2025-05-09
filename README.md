@@ -29,17 +29,21 @@
 - **Request Body**
 ```json
 {
-  "schedule_title": "schedule title",
-  "schedule_content": "schedule content",
-  "user_name": "lee",
-  "password": "1234"
+  "scheduleTitle": "schedule title",
+  "scheduleContent": "schedule content",
+  "userName": "lee",
+  "userEmail": "meta212121@naver.com",
+  "userPassword": "1234"
 }
 ```
 ---
 ### 1-2. Response
 - **Request Body**
 ```json
-4
+{
+  "userId" : 1,
+  "scheduleId" : 1
+}
 ```
 ---
 ### 2. 전체 일정 조회
@@ -47,8 +51,8 @@
 - **Method** : `GET`
 ### 2-1. Request
 - **Request Param**
-    - **URL 예시** : `/api/schedules?userName=lee&date=2025-05-08`
-    - **필수 여부** : `userName` - `required=true`, `date` - `required=false`
+    - **URL 예시** : `/api/schedules?userId=1&date=2025-05-08`
+    - **필수 여부** : `userId` - `required=true`, `date` - `required=false`
 ---
 ### 2-2. Response
 - **Response Body**
@@ -57,18 +61,18 @@
 ```json
 [
   {
-    "schedule_id": 1,
-    "schedule_title": "title1",
-    "schedule_content": "content1",
-    "user_name": "lee",
+    "scheduleId": 1,
+    "scheduleTitle": "title1",
+    "scheduleContent": "content1",
+    "userName": "lee",
     "created_at": "2025-05-08T14:00:00",
     "updated_at": "2025-05-08T14:00:00"
   },
   {
-    "schedule_id": 2,
-    "schedule_title": "title2",
-    "schedule_content": "content2",
-    "user_name": "lee",
+    "scheduleId": 2,
+    "scheduleTitle": "title2",
+    "scheduleContent": "content2",
+    "userName": "lee",
     "created_at": "2025-05-08T14:00:00",
     "updated_at": "2025-05-08T14:00:00"
   }
@@ -89,10 +93,10 @@
 ```json
 
   {
-    "schedule_id": 1,
-    "schedule_title": "title",
-    "schedule_content": "content",
-    "user_name": "lee",
+    "scheduleId": 1,
+    "scheduleTitle": "title",
+    "scheduleContent": "content",
+    "userName": "lee",
     "created_at": "2025-05-08T14:00:00",
     "updated_at": "2025-05-08T14:00:00"
   }
@@ -106,21 +110,22 @@
 - **RequestBody**
 ```json
 {
-  "schedule_id": 1,
-  "password": "12345",
-  "schedule_title" : "수정한 제목",
-  "schedule_content" : "수정한 내용",
-  "user_name" : "수정한 작성자명"
+  "scheduleId": 1,
+  "userPassword": "12345",
+  "scheduleTitle" : "수정한 제목",
+  "scheduleContent" : "수정한 내용",
+  "userName" : "수정한 작성자명",
+  "userId" : 1
 }
 ```
 ### 4-2. Response
 - **Response Body**
 ```json
   {
-    "schedule_id": 1,
-    "schedule_title": "title",
-    "schedule_content": "content",
-    "user_name": "lee",
+    "scheduleId": 1,
+    "scheduleTitle": "title",
+    "scheduleContent": "content",
+    "userName": "lee",
     "created_at": "2025-05-08T14:00:00",
     "updated_at": "2025-05-08T14:00:00"
   }
@@ -134,7 +139,7 @@
 - **RequestBody**
 ```json
 {
-  "schedule_id": 1,
-  "password": "12345"
+  "scheduleId": 1,
+  "userPassword": "12345"
 }
 ```
