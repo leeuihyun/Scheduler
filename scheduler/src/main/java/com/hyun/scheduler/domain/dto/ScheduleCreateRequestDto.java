@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleUpdateRequestDto implements UserValidCredentials {
-  private Long scheduleId;
+public class ScheduleCreateRequestDto implements UserValidNameAndPassword {
   private String scheduleTitle;
   private String scheduleContent;
-  private Long userId;
+  private String userEmail;
   private String userName;
   private String userPassword;
 }
