@@ -19,4 +19,6 @@ public interface ScheduleService {
   ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
 
   void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+
+  List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
 }

@@ -101,4 +101,9 @@ public class ScheduleServiceImpl implements ScheduleService{
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄 삭제에 실패했습니다.");
     }
   }
+
+  @Override
+  public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
+    return scheduleRepository.findPageSchedules(page, size);
+  }
 }
