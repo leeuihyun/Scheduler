@@ -19,87 +19,94 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ScheduleRepositoryImpl implements ScheduleRepository{
+public class ScheduleRepositoryImpl implements ScheduleRepository {
 
-  private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-  public ScheduleRepositoryImpl(JdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
-
-  @Override
-  public Long saveSchedule(String scheduleTitle, String scheduleContent, Long userId) {
-    SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-
-    simpleJdbcInsert
-        .withTableName("schedule")
-        .usingGeneratedKeyColumns("schedule_id")
-        .usingColumns("schedule_title", "schedule_content", "user_id");
-
-    Map<String, Object> map = new HashMap<>();
-    map.put("schedule_title", scheduleTitle);
-    map.put("schedule_content", scheduleContent);
-    map.put("user_id", userId);
-
-    Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(map));
-
-    return key.longValue();
-  }
-
-  @Override
-  public Optional<ScheduleResponseDto> findScheduleById(Long scheduleId) {
-    List<ScheduleResponseDto> result = jdbcTemplate.query(
-        "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where schedule_id = ?",
-        scheduleRowMapper(), scheduleId);
-    return result.stream().findAny();
-  }
-
-  @Override
-  public List<ScheduleResponseDto> findAllSchedules(Long userId, Optional<LocalDate> optionalDate) {
-    if(optionalDate.isEmpty()) {
-      return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? ORDER BY s.updated_at DESC", scheduleRowMapper(), userId);
+    public ScheduleRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
-    return jdbcTemplate.query("select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? and DATE(s.updated_at) = ? ORDER BY s.updated_at DESC", scheduleRowMapper(), userId, optionalDate.get().toString());
-  }
 
-  @Override
-  public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
-    return jdbcTemplate.update(
-        "update schedule set schedule_title=?, schedule_content = ? where schedule_id = ?",
-        scheduleUpdateRequestDto.getScheduleTitle(), scheduleUpdateRequestDto.getScheduleContent(),
-        scheduleUpdateRequestDto.getScheduleId());
-  }
+    @Override
+    public Long saveSchedule(String scheduleTitle, String scheduleContent, Long userId) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
 
-  @Override
-  public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
-    return jdbcTemplate.update("delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and u.user_password = ?",
-        scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserPassword());
-  }
+        simpleJdbcInsert
+            .withTableName("schedule")
+            .usingGeneratedKeyColumns("schedule_id")
+            .usingColumns("schedule_title", "schedule_content", "user_id");
 
-  @Override
-  public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
-    return jdbcTemplate.query(
-        "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at "
-            + "from schedule s "
-            + "join user u on s.user_id = u.user_id "
-            + "ORDER BY s.updated_at DESC "
-            + "LIMIT ? OFFSET ?",
-        scheduleRowMapper(), size, page*size);
-  }
+        Map<String, Object> map = new HashMap<>();
+        map.put("schedule_title", scheduleTitle);
+        map.put("schedule_content", scheduleContent);
+        map.put("user_id", userId);
 
-  private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
-    return new RowMapper<ScheduleResponseDto>() {
-      @Override
-      public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return new ScheduleResponseDto(
-            rs.getLong("schedule_id"),
-            rs.getString("schedule_title"),
-            rs.getString("schedule_content"),
-            rs.getString("user_name"),
-            rs.getTimestamp("created_at").toLocalDateTime(),
-            rs.getTimestamp("updated_at").toLocalDateTime()
-        );
-      }
-    };
-  }
+        Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(map));
+
+        return key.longValue();
+    }
+
+    @Override
+    public Optional<ScheduleResponseDto> findScheduleById(Long scheduleId) {
+        List<ScheduleResponseDto> result = jdbcTemplate.query(
+            "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where schedule_id = ?",
+            scheduleRowMapper(), scheduleId);
+        return result.stream().findAny();
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findAllSchedules(Long userId,
+        Optional<LocalDate> optionalDate) {
+        if (optionalDate.isEmpty()) {
+            return jdbcTemplate.query(
+                "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? ORDER BY s.updated_at DESC",
+                scheduleRowMapper(), userId);
+        }
+        return jdbcTemplate.query(
+            "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at from schedule s join user u on s.user_id = u.user_id where s.user_id = ? and DATE(s.updated_at) = ? ORDER BY s.updated_at DESC",
+            scheduleRowMapper(), userId, optionalDate.get().toString());
+    }
+
+    @Override
+    public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+        return jdbcTemplate.update(
+            "update schedule set schedule_title=?, schedule_content = ? where schedule_id = ?",
+            scheduleUpdateRequestDto.getScheduleTitle(),
+            scheduleUpdateRequestDto.getScheduleContent(),
+            scheduleUpdateRequestDto.getScheduleId());
+    }
+
+    @Override
+    public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
+        return jdbcTemplate.update(
+            "delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and s.user_id = ? and u.user_password = ?",
+            scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserId(), scheduleDeleteDto.getUserPassword());
+    }
+
+    @Override
+    public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
+        return jdbcTemplate.query(
+            "select s.schedule_id, s.schedule_title, s.schedule_content, u.user_name, s.created_at, s.updated_at "
+                + "from schedule s "
+                + "join user u on s.user_id = u.user_id "
+                + "ORDER BY s.updated_at DESC "
+                + "LIMIT ? OFFSET ?",
+            scheduleRowMapper(), size, page * size);
+    }
+
+    private RowMapper<ScheduleResponseDto> scheduleRowMapper() {
+        return new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new ScheduleResponseDto(
+                    rs.getLong("schedule_id"),
+                    rs.getString("schedule_title"),
+                    rs.getString("schedule_content"),
+                    rs.getString("user_name"),
+                    rs.getTimestamp("created_at").toLocalDateTime(),
+                    rs.getTimestamp("updated_at").toLocalDateTime()
+                );
+            }
+        };
+    }
 }

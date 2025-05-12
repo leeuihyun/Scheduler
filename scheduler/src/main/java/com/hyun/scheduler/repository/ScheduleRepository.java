@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleRepository {
-  Long saveSchedule(String scheduleTitle, String scheduleContent, Long userId);
 
-  Optional<ScheduleResponseDto> findScheduleById(Long scheduleId);
+    Long saveSchedule(String scheduleTitle, String scheduleContent, Long userId);
 
-  List<ScheduleResponseDto> findAllSchedules(Long userId, Optional<LocalDate> optionalDate);
+    Optional<ScheduleResponseDto> findScheduleById(Long scheduleId);
 
-  Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
+    List<ScheduleResponseDto> findAllSchedules(Long userId, Optional<LocalDate> optionalDate);
 
-  Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+    Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
 
-  List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
+    Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+
+    List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
 }
