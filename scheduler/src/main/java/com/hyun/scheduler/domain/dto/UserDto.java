@@ -8,9 +8,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class UserDto {
-  private Long userId;
-  private String userEmail;
-  private String userName;
-  private LocalDateTime created_at;
-  private LocalDateTime updated_at;
+
+    private Long userId;
+    private String userEmail;
+    private String userName;
+    private LocalDateTime created_at;
+    private LocalDateTime updated_at;
 }

@@ -1,109 +1,117 @@
 package com.hyun.scheduler.service;
 
+import com.hyun.scheduler.domain.dto.ScheduleException;
 import com.hyun.scheduler.domain.dto.ScheduleCreateResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleCreateRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import com.hyun.scheduler.domain.dto.UserDto;
+import com.hyun.scheduler.enums.ErrorEnum;
 import com.hyun.scheduler.repository.ScheduleRepository;
 import com.hyun.scheduler.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.apache.catalina.User;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService{
+public class ScheduleServiceImpl implements ScheduleService {
 
-  private final ScheduleRepository scheduleRepository;
-  private final UserRepository userRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
-  public ScheduleServiceImpl(ScheduleRepository scheduleRepository, UserRepository userRepository) {
-    this.scheduleRepository = scheduleRepository;
-    this.userRepository = userRepository;
-  }
-
-  @Transactional
-  @Override
-  public ScheduleCreateResponseDto saveSchedule(ScheduleCreateRequestDto scheduleRequestDto) {
-    
-    Optional<UserDto> user = userRepository.findUserByNameAndPassword(scheduleRequestDto);
-
-    Long user_id;
-    
-    if(user.isEmpty()) {
-      user_id = userRepository.saveUser(scheduleRequestDto.getUserName(), scheduleRequestDto.getUserEmail(), scheduleRequestDto.getUserPassword());
-    }else {
-      user_id = user.get().getUserId();
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository,
+        UserRepository userRepository) {
+        this.scheduleRepository = scheduleRepository;
+        this.userRepository = userRepository;
     }
 
-    Long schedule_id = scheduleRepository.saveSchedule(scheduleRequestDto.getScheduleTitle(), scheduleRequestDto.getScheduleContent(), user_id);
+    @Transactional
+    @Override
+    public ScheduleCreateResponseDto saveSchedule(ScheduleCreateRequestDto scheduleRequestDto) {
 
-    return new ScheduleCreateResponseDto(user_id, schedule_id);
-  }
+        Optional<UserDto> user = userRepository.findUserByNameAndPassword(scheduleRequestDto);
 
-  @Override
-  public List<ScheduleResponseDto> findAllSchedules(Long user_id, Optional<LocalDate> optionalDate) {
-    return scheduleRepository.findAllSchedules(user_id, optionalDate);
-  }
+        Long userId;
 
-  @Override
-  public ScheduleResponseDto findScheduleById(Long schedule_id) {
-    Optional<ScheduleResponseDto> scheduleResponse =  scheduleRepository.findScheduleById(schedule_id);
+        if (user.isEmpty()) {
+            userId = userRepository.saveUser(scheduleRequestDto.getUserName(),
+                scheduleRequestDto.getUserEmail(), scheduleRequestDto.getUserPassword());
+        } else {
+            userId = user.get().getUserId();
+        }
 
-    if(scheduleResponse.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄이 존재하지 않습니다.");
+        Long scheduleId = scheduleRepository.saveSchedule(scheduleRequestDto.getScheduleTitle(),
+            scheduleRequestDto.getScheduleContent(), userId);
+
+        return new ScheduleCreateResponseDto(userId, scheduleId);
     }
 
-    return scheduleResponse.get();
-  }
-
-  @Transactional
-  @Override
-  public ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
-    Optional<UserDto> user = userRepository.validUserCredentials(scheduleUpdateRequestDto);
-
-    if(user.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "일치하는 유저정보가 없습니다.");
+    @Override
+    public List<ScheduleResponseDto> findAllSchedules(Long user_id,
+        Optional<LocalDate> optionalDate) {
+        return scheduleRepository.findAllSchedules(user_id, optionalDate);
     }
 
-    int userUpdateRow = userRepository.updateUserName(scheduleUpdateRequestDto);
+    @Override
+    public ScheduleResponseDto findScheduleById(Long schedule_id) {
+        Optional<ScheduleResponseDto> scheduleResponse = scheduleRepository.findScheduleById(
+            schedule_id);
 
-    if(userUpdateRow == 0) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "유저 수정에 실패했습니다.");
+        if (scheduleResponse.isEmpty()) {
+            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+        }
+
+        return scheduleResponse.get();
     }
 
-    int updateRow = scheduleRepository.updateSchedule(scheduleUpdateRequestDto);
+    @Transactional
+    @Override
+    public ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+        Optional<UserDto> user = userRepository.validUserCredentials(scheduleUpdateRequestDto);
 
-    if(updateRow == 0) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄 수정에 실패했습니다.");
+        if (user.isEmpty()) {
+            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+        }
+
+        int userUpdateRow = userRepository.updateUserName(scheduleUpdateRequestDto);
+
+        // 유니크 키를 도입하는 형식으로 수정해야할 듯 함
+        if (userUpdateRow == 0) {
+            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+        }
+
+        int updateRow = scheduleRepository.updateSchedule(scheduleUpdateRequestDto);
+
+        Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.findScheduleById(
+            scheduleUpdateRequestDto.getScheduleId());
+
+        if (updateRow == 0 || scheduleResponseDto.isEmpty()) {
+            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+        }
+
+        return scheduleResponseDto.get();
     }
 
-    Optional<ScheduleResponseDto> scheduleResponseDto = scheduleRepository.findScheduleById(scheduleUpdateRequestDto.getScheduleId());
+    @Override
+    public void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
+        Optional<UserDto> user = userRepository.validUserCredentials(scheduleDeleteDto);
 
-    if(scheduleResponseDto.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄 수정에 실패했습니다.");
+        if (user.isEmpty()) {
+            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+        }
+
+        int deleteRow = scheduleRepository.deleteSchedule(scheduleDeleteDto);
+
+        if (deleteRow == 0) {
+            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+        }
     }
 
-    return scheduleResponseDto.get();
-  }
-
-  @Override
-  public void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
-    int deleteRow = scheduleRepository.deleteSchedule(scheduleDeleteDto);
-
-    if(deleteRow == 0) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "스케줄 삭제에 실패했습니다.");
+    @Override
+    public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
+        return scheduleRepository.findPageSchedules(page, size);
     }
-  }
-
-  @Override
-  public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
-    return scheduleRepository.findPageSchedules(page, size);
-  }
 }

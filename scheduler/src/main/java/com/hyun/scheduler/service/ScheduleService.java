@@ -10,15 +10,16 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ScheduleService {
-  ScheduleCreateResponseDto saveSchedule(ScheduleCreateRequestDto scheduleRequestDto);
 
-  List<ScheduleResponseDto> findAllSchedules(Long user_id, Optional<LocalDate> optionalDate);
+    ScheduleCreateResponseDto saveSchedule(ScheduleCreateRequestDto scheduleRequestDto);
 
-  ScheduleResponseDto findScheduleById(Long schedule_id);
+    List<ScheduleResponseDto> findAllSchedules(Long user_id, Optional<LocalDate> optionalDate);
 
-  ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
+    ScheduleResponseDto findScheduleById(Long schedule_id);
 
-  void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+    ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto);
 
-  List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
+    void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
+
+    List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
 }

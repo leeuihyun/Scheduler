@@ -1,6 +1,8 @@
-package com.hyun.scheduler.domain.dto;
+package com.hyun.scheduler.domain.model;
 
 public interface UserValidNameAndPassword {
-  String getUserName();
-  String getUserPassword();
+
+    String getUserName();
+
+    String getUserPassword();
 }

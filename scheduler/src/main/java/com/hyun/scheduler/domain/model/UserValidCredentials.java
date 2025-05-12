@@ -1,6 +1,8 @@
-package com.hyun.scheduler.domain.dto;
+package com.hyun.scheduler.domain.model;
 
 public interface UserValidCredentials {
-  Long getUserId();
-  String getUserPassword();
+
+    Long getUserId();
+
+    String getUserPassword();
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SchedulePageRequestDto {
-  private Integer page;
-  private Integer size;
+
+    private Integer page;
+    private Integer size;
 }
