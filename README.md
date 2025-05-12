@@ -140,6 +140,7 @@
 - **RequestBody**
 ```json
 {
+  "userId": 1,
   "scheduleId": 1,
   "userPassword": "12345"
 }
