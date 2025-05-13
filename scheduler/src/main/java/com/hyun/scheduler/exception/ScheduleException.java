@@ -1,6 +1,7 @@
-package com.hyun.scheduler.domain.dto;
+package com.hyun.scheduler.exception;
 
-import com.hyun.scheduler.enums.ErrorEnum;
+import com.hyun.scheduler.enums.RequestBodyErrorEnum;
+import com.hyun.scheduler.enums.model.ErrorModel;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -11,7 +12,7 @@ public class ScheduleException extends RuntimeException {
     private final String fieldName;
     private final String errorMessage;
 
-    public ScheduleException(ErrorEnum errorEnum) {
+    public <T extends ErrorModel> ScheduleException(T errorEnum) {
         super(errorEnum.getErrorMessage());
         this.httpStatus = errorEnum.getHttpStatus();
         this.fieldName = errorEnum.getFieldName();
