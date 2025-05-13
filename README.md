@@ -17,7 +17,7 @@
 | [3](#3-선택-일정-조회)  | GET    | 선택 일정 조회    | /api/schedule/{scheduleId} | PathVariable | 200 OK   |
 | [4](#4-선택-일정-수정)  | PUT    | 선택 일정 수정    | /api/schedule/update       | RequestBody | 200 OK   |
 | [5](#5-선택-일정-삭제)  | POST   | 선택 일정 삭제    | /api/schedule/delete       | RequestBody | 200 OK   |
-| [6](#6-페이지네이션 조회) | GET    | 페이지네이션 조회   | /api/page/schedules              | RequestBody | 200 OK   |
+| [6](#6-페이지네이션-조회) | GET    | 페이지네이션 조회   | /api/page/schedules              | RequestBody | 200 OK   |
 
 ---
 
@@ -66,16 +66,16 @@
     "scheduleTitle": "title1",
     "scheduleContent": "content1",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   },
   {
     "scheduleId": 2,
     "scheduleTitle": "title2",
     "scheduleContent": "content2",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 ]
 ```
@@ -98,8 +98,8 @@
     "scheduleTitle": "title",
     "scheduleContent": "content",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 
 ```
@@ -127,8 +127,8 @@
     "scheduleTitle": "title",
     "scheduleContent": "content",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 
 ```
@@ -166,16 +166,16 @@
     "scheduleTitle": "Test 21 11Title",
     "scheduleContent": "Test 2 Content",
     "userName": "이의현",
-    "created_at": "2025-05-09T17:10:41",
-    "updated_at": "2025-05-09T17:10:41"
+    "createdAt": "2025-05-09T17:10:41",
+    "updatedAt": "2025-05-09T17:10:41"
   },
   {
     "scheduleId": 20,
     "scheduleTitle": "title2",
     "scheduleContent": "content2",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 ]
 ```
