@@ -1,13 +1,13 @@
 package com.hyun.scheduler.service;
 
-import com.hyun.scheduler.domain.dto.ScheduleException;
+import com.hyun.scheduler.exception.ScheduleException;
 import com.hyun.scheduler.domain.dto.ScheduleCreateResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleCreateRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
 import com.hyun.scheduler.domain.dto.UserDto;
-import com.hyun.scheduler.enums.ErrorEnum;
+import com.hyun.scheduler.enums.RequestBodyErrorEnum;
 import com.hyun.scheduler.repository.ScheduleRepository;
 import com.hyun.scheduler.repository.UserRepository;
 import java.time.LocalDate;
@@ -61,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             schedule_id);
 
         if (scheduleResponse.isEmpty()) {
-            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+            throw new ScheduleException(RequestBodyErrorEnum.SCHEDULE_NOT_FOUND);
         }
 
         return scheduleResponse.get();
@@ -73,14 +73,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         Optional<UserDto> user = userRepository.validUserCredentials(scheduleUpdateRequestDto);
 
         if (user.isEmpty()) {
-            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+            throw new ScheduleException(RequestBodyErrorEnum.PASSWORD_MISMATCH);
         }
 
         int userUpdateRow = userRepository.updateUserName(scheduleUpdateRequestDto);
 
-        // 유니크 키를 도입하는 형식으로 수정해야할 듯 함
         if (userUpdateRow == 0) {
-            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+            throw new ScheduleException(RequestBodyErrorEnum.USER_MODIFY_FAIL);
         }
 
         int updateRow = scheduleRepository.updateSchedule(scheduleUpdateRequestDto);
@@ -89,7 +88,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             scheduleUpdateRequestDto.getScheduleId());
 
         if (updateRow == 0 || scheduleResponseDto.isEmpty()) {
-            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+            throw new ScheduleException(RequestBodyErrorEnum.SCHEDULE_NOT_FOUND);
         }
 
         return scheduleResponseDto.get();
@@ -100,13 +99,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         Optional<UserDto> user = userRepository.validUserCredentials(scheduleDeleteDto);
 
         if (user.isEmpty()) {
-            throw new ScheduleException(ErrorEnum.PASSWORD_MISMATCH);
+            throw new ScheduleException(RequestBodyErrorEnum.PASSWORD_MISMATCH);
         }
 
         int deleteRow = scheduleRepository.deleteSchedule(scheduleDeleteDto);
 
         if (deleteRow == 0) {
-            throw new ScheduleException(ErrorEnum.SCHEDULE_NOT_FOUND);
+            throw new ScheduleException(RequestBodyErrorEnum.SCHEDULE_NOT_FOUND);
         }
     }
 

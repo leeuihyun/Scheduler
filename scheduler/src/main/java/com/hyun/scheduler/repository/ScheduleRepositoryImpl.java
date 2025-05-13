@@ -70,10 +70,10 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     @Override
     public Integer updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
         return jdbcTemplate.update(
-            "update schedule set schedule_title=?, schedule_content = ? where schedule_id = ?",
+            "update schedule set schedule_title=?, schedule_content = ? where schedule_id = ? and user_id = ?",
             scheduleUpdateRequestDto.getScheduleTitle(),
             scheduleUpdateRequestDto.getScheduleContent(),
-            scheduleUpdateRequestDto.getScheduleId());
+            scheduleUpdateRequestDto.getScheduleId(), scheduleUpdateRequestDto.getUserId());
     }
 
     @Override

@@ -2,10 +2,44 @@
 
 ---
 
+## 📌 목적 
+간단한 일정 관리 API를 통해 RESTful 서비스를 설계하고 JDBC 사용법 및 Spring 학습
+
+## 🎯 레벨 
+- ✅ **LV0** ➡️ API명세서, ERD, SQL 작성️
+- ✅ **LV1** ➡️ 일정 생성, 조회 기능 구현
+- ✅ **LV2** ➡️ 일정 수정, 삭제 기능 구현
+- ✅ **LV3** ➡️ 연관 관계 설정 (작성자, 일정)
+- ✅ **LV4** ➡️ 페이지네이션 기능 구현
+- ✅ **LV5** ➡️ 예외발생 처리
+- ✅ **LV6** ➡️ null 체크 및 검증 수행
+
+## 📁 패키지 구조
+```json
+com.hyun.scheduler
+├── controller // API 진입 지점
+├── service // 비즈니스 로직
+├── domain 
+│ └── dto // 요청 및 응답 객체
+│ └── model // 특정 DTO 구현체에서 필요한 인터페이스
+├── repository // DB 접근 
+├── enums // 에러 코드 Enum 
+│ └── model // 공통 에러 인터페이스
+│ └── utils // enum에서 공통적으로 사용하는 유틸 메서드
+├── exception // 커스텀 예외 처리
+└── SchedulerApplication.java // 메인 
+```
+
+## 🖥 사용 기술
+ - 🛠 **java 17**
+ - 🛠 **springboot 3.4**
+ - 🛠 **lombok 1.18**
+ - 🛠 **mysql connector 8**
+ - 🛠 **jdbc**
+
 ## 📌 ERD
 
-![Lv1 ERD](scheduler/src/main/resources/static/img/Lv1ERD.png)
-
+![ERD](scheduler/src/main/resources/static/img/finalERD.png)
 ---
 
 ## 📘 API 명세서 요약
@@ -17,7 +51,7 @@
 | [3](#3-선택-일정-조회)  | GET    | 선택 일정 조회    | /api/schedule/{scheduleId} | PathVariable | 200 OK   |
 | [4](#4-선택-일정-수정)  | PUT    | 선택 일정 수정    | /api/schedule/update       | RequestBody | 200 OK   |
 | [5](#5-선택-일정-삭제)  | POST   | 선택 일정 삭제    | /api/schedule/delete       | RequestBody | 200 OK   |
-| [6](#6-페이지네이션 조회) | GET    | 페이지네이션 조회   | /api/page/schedules              | RequestBody | 200 OK   |
+| [6](#6-페이지네이션-조회) | GET    | 페이지네이션 조회   | /api/page/schedules              | RequestBody | 200 OK   |
 
 ---
 
@@ -66,16 +100,16 @@
     "scheduleTitle": "title1",
     "scheduleContent": "content1",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   },
   {
     "scheduleId": 2,
     "scheduleTitle": "title2",
     "scheduleContent": "content2",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 ]
 ```
@@ -98,8 +132,8 @@
     "scheduleTitle": "title",
     "scheduleContent": "content",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 
 ```
@@ -127,8 +161,8 @@
     "scheduleTitle": "title",
     "scheduleContent": "content",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 
 ```
@@ -166,16 +200,16 @@
     "scheduleTitle": "Test 21 11Title",
     "scheduleContent": "Test 2 Content",
     "userName": "이의현",
-    "created_at": "2025-05-09T17:10:41",
-    "updated_at": "2025-05-09T17:10:41"
+    "createdAt": "2025-05-09T17:10:41",
+    "updatedAt": "2025-05-09T17:10:41"
   },
   {
     "scheduleId": 20,
     "scheduleTitle": "title2",
     "scheduleContent": "content2",
     "userName": "lee",
-    "created_at": "2025-05-08T14:00:00",
-    "updated_at": "2025-05-08T14:00:00"
+    "createdAt": "2025-05-08T14:00:00",
+    "updatedAt": "2025-05-08T14:00:00"
   }
 ]
 ```
