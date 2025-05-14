@@ -61,6 +61,7 @@ public class ScheduleController {
     @PutMapping("/schedule/update")
     public ResponseEntity<ScheduleResponseDto> updateSchedule(
         @Valid @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
+        scheduleService.userValid(scheduleUpdateRequestDto);
         ScheduleResponseDto scheduleResponseDto = scheduleService.updateSchedule(
             scheduleUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(scheduleResponseDto);
@@ -68,6 +69,7 @@ public class ScheduleController {
 
     @PostMapping("/schedule/delete")
     public ResponseEntity<Void> deleteSchedule(@Valid @RequestBody ScheduleDeleteDto scheduleDeleteDto) {
+        scheduleService.userValid(scheduleDeleteDto);
         scheduleService.deleteSchedule(scheduleDeleteDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

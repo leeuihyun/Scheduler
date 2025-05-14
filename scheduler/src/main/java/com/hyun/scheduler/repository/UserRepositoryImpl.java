@@ -34,20 +34,32 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public <T extends UserValidCredentials> Optional<UserDto> validUserCredentials(T dto) {
-        List<UserDto> result = jdbcTemplate.query(
-            "select * from user where user_id = ? and user_password = ?"
-            , userRowMapper(), dto.getUserId(), dto.getUserPassword());
-        return result.stream().findAny();
+    public Optional<String> findUserPasswordById(Long userId) {
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+            "select user_password from user where user_id = ?"
+            ,String.class, userId));
+    }
+
+    @Override
+    public List<String> findUserPasswordByName(String userName) {
+        return jdbcTemplate.query(
+            "select user_password from user where user_name = ?"
+            ,userPasswordMapper(), userName);
+    }
+
+    @Override
+    public List<UserDto> findUserByName(String userName) {
+        return jdbcTemplate.query(
+            "select * from user where user_name = ?"
+            , userRowMapper(), userName);
     }
 
 
     @Override
     public Integer updateUserName(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
         return jdbcTemplate.update(
-            "update user set user_name=? where user_id = ? and user_password = ?",
-            scheduleUpdateRequestDto.getUserName(), scheduleUpdateRequestDto.getUserId(),
-            scheduleUpdateRequestDto.getUserPassword());
+            "update user set user_name=? where user_id = ?",
+            scheduleUpdateRequestDto.getUserName(), scheduleUpdateRequestDto.getUserId());
     }
 
     @Override
@@ -80,6 +92,15 @@ public class UserRepositoryImpl implements UserRepository {
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getTimestamp("updated_at").toLocalDateTime()
                 );
+            }
+        };
+    }
+
+    private RowMapper<String> userPasswordMapper() {
+        return new RowMapper() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("userPassword");
             }
         };
     }

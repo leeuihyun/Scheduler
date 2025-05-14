@@ -79,8 +79,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
     @Override
     public Integer deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
         return jdbcTemplate.update(
-            "delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and s.user_id = ? and u.user_password = ?",
-            scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserId(), scheduleDeleteDto.getUserPassword());
+            "delete s from schedule s join user u on s.user_id = u.user_id where s.schedule_id = ? and s.user_id = ?",
+            scheduleDeleteDto.getScheduleId(), scheduleDeleteDto.getUserId());
     }
 
     @Override

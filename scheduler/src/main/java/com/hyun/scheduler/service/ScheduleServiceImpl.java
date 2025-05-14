@@ -1,5 +1,6 @@
 package com.hyun.scheduler.service;
 
+import com.hyun.scheduler.domain.model.UserValidCredentials;
 import com.hyun.scheduler.exception.ScheduleException;
 import com.hyun.scheduler.domain.dto.ScheduleCreateResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
@@ -13,6 +14,7 @@ import com.hyun.scheduler.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,30 +23,45 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
-
+    private final PasswordEncoder passwordEncoder;
+    
     public ScheduleServiceImpl(ScheduleRepository scheduleRepository,
-        UserRepository userRepository) {
+        UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.scheduleRepository = scheduleRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     @Override
     public ScheduleCreateResponseDto saveSchedule(ScheduleCreateRequestDto scheduleRequestDto) {
 
-        Optional<UserDto> user = userRepository.findUserByNameAndPassword(scheduleRequestDto);
+        Long userId = null;
 
-        Long userId;
+        ScheduleCreateRequestDto encodedRequest =
+            scheduleRequestDto.EndcodePassword(passwordEncoder.encode(scheduleRequestDto.getUserPassword()));
 
-        if (user.isEmpty()) {
-            userId = userRepository.saveUser(scheduleRequestDto.getUserName(),
-                scheduleRequestDto.getUserEmail(), scheduleRequestDto.getUserPassword());
-        } else {
-            userId = user.get().getUserId();
+        List<UserDto> userList = userRepository.findUserByName(scheduleRequestDto.getUserName());
+
+        if(!userList.isEmpty()) {
+            for(UserDto user : userList) {
+                Optional<String> userOptionalPassword= userRepository.findUserPasswordById(user.getUserId());
+                if(userOptionalPassword.isPresent()){
+                    if(passwordEncoder.matches(scheduleRequestDto.getUserPassword(), userOptionalPassword.get())) {
+                        userId = user.getUserId();
+                        break;
+                    }
+                }
+            }
         }
 
-        Long scheduleId = scheduleRepository.saveSchedule(scheduleRequestDto.getScheduleTitle(),
-            scheduleRequestDto.getScheduleContent(), userId);
+        if(userList.isEmpty() || userId == null) {
+            userId = userRepository.saveUser(encodedRequest.getUserName(),
+                encodedRequest.getUserEmail(), encodedRequest.getUserPassword());
+        }
+
+        Long scheduleId = scheduleRepository.saveSchedule(encodedRequest.getScheduleTitle(),
+            encodedRequest.getScheduleContent(), userId);
 
         return new ScheduleCreateResponseDto(userId, scheduleId);
     }
@@ -70,16 +87,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     @Override
     public ScheduleResponseDto updateSchedule(ScheduleUpdateRequestDto scheduleUpdateRequestDto) {
-        Optional<UserDto> user = userRepository.validUserCredentials(scheduleUpdateRequestDto);
-
-        if (user.isEmpty()) {
-            throw new ScheduleException(RequestBodyErrorEnum.PASSWORD_MISMATCH);
-        }
 
         int userUpdateRow = userRepository.updateUserName(scheduleUpdateRequestDto);
 
         if (userUpdateRow == 0) {
-            throw new ScheduleException(RequestBodyErrorEnum.USER_MODIFY_FAIL);
+            throw new ScheduleException(RequestBodyErrorEnum.USER_ID_MISMATCH);
         }
 
         int updateRow = scheduleRepository.updateSchedule(scheduleUpdateRequestDto);
@@ -96,12 +108,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto) {
-        Optional<UserDto> user = userRepository.validUserCredentials(scheduleDeleteDto);
-
-        if (user.isEmpty()) {
-            throw new ScheduleException(RequestBodyErrorEnum.PASSWORD_MISMATCH);
-        }
-
         int deleteRow = scheduleRepository.deleteSchedule(scheduleDeleteDto);
 
         if (deleteRow == 0) {
@@ -112,5 +118,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size) {
         return scheduleRepository.findPageSchedules(page, size);
+    }
+
+    @Override
+    public <T extends UserValidCredentials> void userValid(T dto) {
+        Optional<String> userPassword = userRepository.findUserPasswordById(dto.getUserId());
+
+        if(userPassword.isEmpty()) {
+            throw new ScheduleException(RequestBodyErrorEnum.USER_ID_MISMATCH);
+        }
+        if (!passwordEncoder.matches(dto.getUserPassword(), userPassword.get())) {
+            throw new ScheduleException(RequestBodyErrorEnum.PASSWORD_MISMATCH);
+        }
     }
 }

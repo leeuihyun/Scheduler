@@ -1,5 +1,6 @@
 package com.hyun.scheduler.domain.dto;
 
+import com.hyun.scheduler.domain.model.UserPasswordEncode;
 import com.hyun.scheduler.domain.model.UserValidCredentials;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

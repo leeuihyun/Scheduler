@@ -5,6 +5,7 @@ import com.hyun.scheduler.domain.dto.ScheduleDeleteDto;
 import com.hyun.scheduler.domain.dto.ScheduleCreateRequestDto;
 import com.hyun.scheduler.domain.dto.ScheduleResponseDto;
 import com.hyun.scheduler.domain.dto.ScheduleUpdateRequestDto;
+import com.hyun.scheduler.domain.model.UserValidCredentials;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface ScheduleService {
     void deleteSchedule(ScheduleDeleteDto scheduleDeleteDto);
 
     List<ScheduleResponseDto> findPageSchedules(Integer page, Integer size);
+
+    <T extends UserValidCredentials> void userValid(T dto);
 }

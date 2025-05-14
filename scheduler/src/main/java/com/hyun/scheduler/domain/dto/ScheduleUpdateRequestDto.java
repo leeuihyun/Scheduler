@@ -1,5 +1,6 @@
 package com.hyun.scheduler.domain.dto;
 
+import com.hyun.scheduler.domain.model.UserPasswordEncode;
 import com.hyun.scheduler.domain.model.UserValidCredentials;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ScheduleUpdateRequestDto implements UserValidCredentials {
+public class ScheduleUpdateRequestDto implements UserValidCredentials, UserPasswordEncode {
 
     @NotNull
     @Positive
@@ -30,4 +31,9 @@ public class ScheduleUpdateRequestDto implements UserValidCredentials {
 
     @NotBlank
     private String userPassword;
+
+    @Override
+    public ScheduleUpdateRequestDto EndcodePassword(String encodedBcryptPassword) {
+        return new ScheduleUpdateRequestDto(this.scheduleId, this.scheduleTitle, this.scheduleContent, this.userId, this.userName, encodedBcryptPassword);
+    }
 }
